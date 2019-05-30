@@ -1,6 +1,7 @@
 package com.redhat.coolstore.rest;
 
 import org.eclipse.microprofile.health.Health;
+import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.dmr.ModelNode;
@@ -11,35 +12,7 @@ import javax.ws.rs.core.Response;
 import java.net.InetAddress;
 
 @Path("/service")
-public class HealthEndpoint {
-
-  @GET
-  @Health
-  @Path("/health")
-  public HealthCheckResponse health() {
-    ModelNode op = new ModelNode();
-    op.get("address").setEmptyList();
-    op.get("operation").set("read-attribute");
-    op.get("name").set("suspend-state");
-
-    try (ModelControllerClient client = ModelControllerClient.Factory.create(
-        InetAddress.getByName("localhost"), 9990)) {
-      ModelNode response = client.execute(op);
-
-      if (response.has("failure-description")) {
-        throw new Exception(response.get("failure-description").asString());
-      }
-
-      boolean isRunning = response.get("result").asString().equals("RUNNING");
-      if (isRunning) {
-        return HealthCheckResponse.named("server-state").up().build();
-      } else {
-        return HealthCheckResponse.named("server-state").down().build();
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+public class HealthEndpoint implements HealthCheck {
 
   @GET
   @Path("/killme")
@@ -63,4 +36,29 @@ public class HealthEndpoint {
     }
   }
 
+  @Override
+  public HealthCheckResponse call() {
+    ModelNode op = new ModelNode();
+    op.get("address").setEmptyList();
+    op.get("operation").set("read-attribute");
+    op.get("name").set("suspend-state");
+
+    try (ModelControllerClient client = ModelControllerClient.Factory.create(
+        InetAddress.getByName("localhost"), 9990)) {
+      ModelNode response = client.execute(op);
+
+      if (response.has("failure-description")) {
+        throw new Exception(response.get("failure-description").asString());
+      }
+
+      boolean isRunning = response.get("result").asString().equals("RUNNING");
+      if (isRunning) {
+        return HealthCheckResponse.named("server-state").up().build();
+      } else {
+        return HealthCheckResponse.named("server-state").down().build();
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
