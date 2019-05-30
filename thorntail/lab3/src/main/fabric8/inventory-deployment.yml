@@ -24,7 +24,8 @@ spec:
           value: /deployments
         - name: JAVA_OPTIONS
           value: "-Dswarm.project.stage=production -Dswarm.project.stage.file=file:///app/config/inventory-config.yml"
-
+        - name: GC_MAX_METASPACE_SIZE
+          value: 256
         # Insert Volume Mounts here
         volumeMounts:
           - name: config
