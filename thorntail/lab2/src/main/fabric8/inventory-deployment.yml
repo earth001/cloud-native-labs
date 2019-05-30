@@ -24,6 +24,8 @@ spec:
           value: /deployments
         - name: JAVA_OPTIONS
           value: -Dswarm.project.stage=production
+        - name: GC_MAX_METASPACE_SIZE
+          value: 256m
         name: thorntail-inventory-lab2
         image: thorntail-inventory-lab2
         imagePullPolicy: IfNotPresent
