@@ -16,7 +16,7 @@ public class HelloHttpVerticle extends AbstractVerticle {
         router.get("/:name").handler(this::hello);
         
         vertx.createHttpServer()
-            .requestHandler(router::accept)
+            .requestHandler(router)
             .listen(8080);
     }
 

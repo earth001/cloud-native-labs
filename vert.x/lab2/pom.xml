@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-         
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.redhat.gpte.appmod</groupId>
   <artifactId>hello-microservice</artifactId>
@@ -14,17 +15,17 @@
 
     <vertx.verticle>com.redhat.gpte.appmod.HelloHttpVerticle</vertx.verticle>
 
-  <!-- vert.x properties -->
-  <vertx.version>3.5.4.redhat-00002</vertx.version>
+    <!-- vert.x properties -->
+    <vertx.version>3.6.3.redhat-00009</vertx.version>
 
-  <!-- Maven plugins -->
-  <vertx-maven-plugin.version>1.0.17</vertx-maven-plugin.version>
-    <fabric8-maven-plugin.version>3.5.19</fabric8-maven-plugin.version>
+    <!-- Maven plugins -->
+    <vertx-maven-plugin.version>1.0.18</vertx-maven-plugin.version>
+    <fabric8-maven-plugin.version>3.5.42</fabric8-maven-plugin.version>
 
   </properties>
 
   <dependencyManagement>
-  
+
     <dependencies>
       <dependency>
         <groupId>io.vertx</groupId>
@@ -34,7 +35,7 @@
         <scope>import</scope>
       </dependency>
     </dependencies>
-  
+
   </dependencyManagement>
 
   <dependencies>
@@ -47,7 +48,7 @@
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
     </dependency>
-  
+
   </dependencies>
 
   <build>
@@ -79,7 +80,7 @@
       <build>
         <plugins>
           <plugin>
-      <groupId>io.fabric8</groupId>
+            <groupId>io.fabric8</groupId>
             <artifactId>fabric8-maven-plugin</artifactId>
             <version>${fabric8-maven-plugin.version}</version>
             <executions>
