@@ -57,7 +57,7 @@ public class GreetingServiceVerticle extends AbstractVerticle {
         router.get("/*").handler(StaticHandler.create());
 
         vertx.createHttpServer()
-            .requestHandler(router::accept)
+            .requestHandler(router)
             .listen(8080);
     }
 
