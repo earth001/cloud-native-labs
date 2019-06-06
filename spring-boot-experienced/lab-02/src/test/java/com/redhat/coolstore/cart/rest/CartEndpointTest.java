@@ -20,8 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -38,133 +38,136 @@ import io.restassured.http.ContentType;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CartEndpointTest {
 
-    @LocalServerPort
-    private int port;
+  @LocalServerPort
+  private int port;
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
+  @Rule
+  public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
-    @Autowired
-    private CatalogService catalogService;
+  @Autowired
+  private CatalogService catalogService;
 
-    @Before
-    public void beforeTest() throws Exception {
-        RestAssured.baseURI = String.format("http://localhost:%d/cart", port);
-        ReflectionTestUtils.setField(catalogService, null, "catalogServiceUrl", "http://localhost:" + wireMockRule.port(), null);
-        initWireMockServer();
-    }
+  @Before
+  public void beforeTest() throws Exception {
+    RestAssured.baseURI = String.format("http://localhost:%d/cart", port);
+    ReflectionTestUtils.setField(catalogService, null, "catalogServiceUrl",
+        "http://localhost:" + wireMockRule.port(), null);
+    initWireMockServer();
+  }
 
-    @Test
-    public void retrieveCartById() throws Exception {
-        given().get("/{cartId}", "123456")
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .contentType(ContentType.JSON)
-            .body("id", equalTo("123456"))
-            .body("cartItemTotal", equalTo(0.0f))
-            .body("shoppingCartItemList", hasSize(0));
-    }
+  @Test
+  public void retrieveCartById() throws Exception {
+    given().get("/{cartId}", "123456")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("id", equalTo("123456"))
+        .body("cartItemTotal", equalTo(0.0f))
+        .body("shoppingCartItemList", hasSize(0));
+  }
 
-    @Test
-    @DirtiesContext
-    public void addItemToCart() throws Exception {
+  @Test
+  @DirtiesContext
+  public void addItemToCart() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "234567", "111111", new Integer(1))
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .contentType(ContentType.JSON)
-            .body("id", equalTo("234567"))
-            .body("cartItemTotal", equalTo(new Float(100.0)))
-            .body("shoppingCartItemList", hasSize(1))
-            .body("shoppingCartItemList.product.itemId", hasItems("111111"))
-            .body("shoppingCartItemList.price", hasItems(new Float(100.0)))
-            .body("shoppingCartItemList.quantity", hasItems(new Integer(1)));
-    }
+    given().post("/{cartId}/{itemId}/{quantity}", "234567", "111111", 1)
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("id", equalTo("234567"))
+        .body("cartItemTotal", equalTo(100.0f))
+        .body("shoppingCartItemList", hasSize(1))
+        .body("shoppingCartItemList.product.itemId", hasItems("111111"))
+        .body("shoppingCartItemList.price", hasItems(100.0f))
+        .body("shoppingCartItemList.quantity", hasItems(1));
+  }
 
-    @Test
-    @DirtiesContext
-    public void addExistingItemToCart() throws Exception {
+  @Test
+  @DirtiesContext
+  public void addExistingItemToCart() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "345678", "111111", new Integer(1));
-        given().post("/{cartId}/{itemId}/{quantity}", "345678", "111111", new Integer(1))
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .contentType(ContentType.JSON)
-            .body("id", equalTo("345678"))
-            .body("cartItemTotal", equalTo(new Float(200.0)))
-            .body("shoppingCartItemList", hasSize(1))
-            .body("shoppingCartItemList.product.itemId", hasItems("111111"))
-            .body("shoppingCartItemList.price", hasItems(new Float(100.0)))
-            .body("shoppingCartItemList.quantity", hasItems(new Integer(2)));
-    }
+    given().post("/{cartId}/{itemId}/{quantity}", "345678", "111111", 1);
+    given().post("/{cartId}/{itemId}/{quantity}", "345678", "111111", 1)
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("id", equalTo("345678"))
+        .body("cartItemTotal", equalTo(200.0f))
+        .body("shoppingCartItemList", hasSize(1))
+        .body("shoppingCartItemList.product.itemId", hasItems("111111"))
+        .body("shoppingCartItemList.price", hasItems(100.0f))
+        .body("shoppingCartItemList.quantity", hasItems(2));
+  }
 
-    @Test
-    @DirtiesContext
-    public void addItemToCartWhenCatalogServiceThrowsError() throws Exception {
+  @Test
+  @DirtiesContext
+  public void addItemToCartWhenCatalogServiceThrowsError() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "234567", "error", new Integer(1))
-            .then()
-            .assertThat()
-            .statusCode(500);
-    }
+    given().post("/{cartId}/{itemId}/{quantity}", "234567", "error", 1)
+        .then()
+        .assertThat()
+        .statusCode(500);
+  }
 
-    @Test
-    @DirtiesContext
-    public void removeAllInstancesOfItemFromCart() throws Exception {
+  @Test
+  @DirtiesContext
+  public void removeAllInstancesOfItemFromCart() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "456789", "111111", new Integer(2));
-        given().delete("/{cartId}/{itemId}/{quantity}", "456789", "111111", new Integer(2))
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .contentType(ContentType.JSON)
-            .body("id", equalTo("456789"))
-            .body("cartItemTotal", equalTo(new Float(0.0)))
-            .body("shoppingCartItemList", hasSize(0));
-    }
+    given().post("/{cartId}/{itemId}/{quantity}", "456789", "111111", 2);
+    given().delete("/{cartId}/{itemId}/{quantity}", "456789", "111111", 2)
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("id", equalTo("456789"))
+        .body("cartItemTotal", equalTo((float) 0.0))
+        .body("shoppingCartItemList", hasSize(0));
+  }
 
-    @Test
-    @DirtiesContext
-    public void removeSomeInstancesOfItemFromCart() throws Exception {
+  @Test
+  @DirtiesContext
+  public void removeSomeInstancesOfItemFromCart() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "567890", "111111", new Integer(3));
-        given().delete("/{cartId}/{itemId}/{quantity}", "567890", "111111", new Integer(1))
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .contentType(ContentType.JSON)
-            .body("id", equalTo("567890"))
-            .body("cartItemTotal", equalTo(new Float(200.0)))
-            .body("shoppingCartItemList", hasSize(1))
-            .body("shoppingCartItemList.quantity", hasItems(new Integer(2)));
-    }
+    given().post("/{cartId}/{itemId}/{quantity}", "567890", "111111", 3);
+    given().delete("/{cartId}/{itemId}/{quantity}", "567890", "111111", 1)
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("id", equalTo("567890"))
+        .body("cartItemTotal", equalTo(200.0f))
+        .body("shoppingCartItemList", hasSize(1))
+        .body("shoppingCartItemList.quantity", hasItems(2));
+  }
 
-    @Test
-    @DirtiesContext
-    public void checkoutCart() throws Exception {
+  @Test
+  @DirtiesContext
+  public void checkoutCart() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "678901", "111111", new Integer(3));
-        given().post("/checkout/{cartId}", "678901")
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .contentType(ContentType.JSON)
-            .body("id", equalTo("678901"))
-            .body("cartItemTotal", equalTo(new Float(0.0)))
-            .body("shoppingCartItemList", hasSize(0));
-    }
+    given().post("/{cartId}/{itemId}/{quantity}", "678901", "111111", new Integer(3));
+    given().post("/checkout/{cartId}", "678901")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("id", equalTo("678901"))
+        .body("cartItemTotal", equalTo((float) 0.0))
+        .body("shoppingCartItemList", hasSize(0));
+  }
 
-    private void initWireMockServer() throws Exception {
-        InputStream isresp = Thread.currentThread().getContextClassLoader().getResourceAsStream("catalog-response.json");
+  private void initWireMockServer() throws Exception {
+    InputStream isresp = Thread.currentThread().getContextClassLoader()
+        .getResourceAsStream("catalog-response.json");
 
-        stubFor(get(urlEqualTo("/product/111111")).willReturn(
-                aResponse().withStatus(200).withHeader("Content-type", "application/json").withBody(IOUtils.toString(isresp, Charset.defaultCharset()))));
+    stubFor(get(urlEqualTo("/product/111111")).willReturn(
+        aResponse().withStatus(200).withHeader("Content-type", "application/json")
+            .withBody(IOUtils.toString(isresp, Charset.defaultCharset()))));
 
-        stubFor(get(urlEqualTo("/product/error")).willReturn(
-                aResponse().withStatus(500)));
-    }
+    stubFor(get(urlEqualTo("/product/error")).willReturn(
+        aResponse().withStatus(500)));
+  }
 
 }

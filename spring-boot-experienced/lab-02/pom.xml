@@ -11,8 +11,9 @@
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<version.spring-boot>1.5.16.RELEASE</version.spring-boot>
-		<version.fabric8-maven-plugin>3.5.28</version.fabric8-maven-plugin>
+		<version.spring-boot>2.1.5.RELEASE</version.spring-boot>
+		<version.fabric8-maven-plugin>4.1.0</version.fabric8-maven-plugin>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencyManagement>
@@ -43,21 +44,29 @@
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
 			<artifactId>wiremock-standalone</artifactId>
-			<version>2.6.0</version>
+			<version>2.23.2</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.5</version>
+			<version>2.6</version>
 			<scope>test</scope>
 		</dependency>
 
+		<!--Works with java 12-->
+<!--		<dependency>-->
+<!--			<groupId>io.rest-assured</groupId>-->
+<!--			<artifactId>rest-assured-all</artifactId>-->
+<!--			<version>4.0.0</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
+		<!--Works with java 8-->
 		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
-			<version>3.0.3</version>
+			<version>3.3.0</version>
 			<scope>test</scope>
 		</dependency>
 
