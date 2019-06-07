@@ -54,7 +54,7 @@ public class NameServiceVerticle extends AbstractVerticle {
             }
         });
         vertx.createHttpServer()
-            .requestHandler(router::accept)
+            .requestHandler(router)
             .listen(8080);
     }
 }
