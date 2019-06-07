@@ -44,14 +44,14 @@ public class ApiVerticle extends AbstractVerticle {
         router.get("/health/readiness").handler(rc -> rc.response().end("OK"));
 
         HealthCheckHandler healthCheckHandler = HealthCheckHandler.create(vertx)
-                .register("health", f -> health(f));
+                .register("health", this::health);
         router.get("/health/liveness").handler(healthCheckHandler);
         
         // Static content for swagger docs
         router.route().handler(StaticHandler.create());
         
         vertx.createHttpServer()
-            .requestHandler(router::accept)
+            .requestHandler(router)
             .listen(config().getInteger("catalog.http.port", 8080), result -> {
                 if (result.succeeded()) {
                     startFuture.complete();
@@ -67,7 +67,7 @@ public class ApiVerticle extends AbstractVerticle {
                 List<Product> products = ar.result();
                 JsonArray json = new JsonArray();
                 products.stream()
-                    .map(p -> p.toJson())
+                    .map(Product::toJson)
                     .forEach(p -> json.add(p));
                 rc.response()
                     .putHeader("Content-type", "application/json")

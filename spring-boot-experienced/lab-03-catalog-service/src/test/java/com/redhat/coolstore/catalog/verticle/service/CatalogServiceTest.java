@@ -85,7 +85,7 @@ public class CatalogServiceTest extends MongoTestBase {
                 .put("itemId", itemId1)
                 .put("name", "productName1")
                 .put("desc", "productDescription1")
-                .put("price", new Double(100.0));
+                .put("price", 100.0);
 
         mongoClient.save("products", json1, ar -> {
             if (ar.failed()) {
@@ -99,7 +99,7 @@ public class CatalogServiceTest extends MongoTestBase {
                 .put("itemId", itemId2)
                 .put("name", "productName2")
                 .put("desc", "productDescription2")
-                .put("price", new Double(100.0));
+                .put("price", 100.0);
 
         mongoClient.save("products", json2, ar -> {
             if (ar.failed()) {
