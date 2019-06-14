@@ -70,42 +70,42 @@ public class CartEndpointTest {
     @DirtiesContext
     public void addItemToCart() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "234567", "111111", new Integer(1))
+        given().post("/{cartId}/{itemId}/{quantity}", "234567", "111111", 1)
             .then()
             .assertThat()
             .statusCode(200)
             .contentType(ContentType.JSON)
             .body("id", equalTo("234567"))
-            .body("cartItemTotal", equalTo(new Float(100.0)))
+            .body("cartItemTotal", equalTo(100.0f))
             .body("shoppingCartItemList", hasSize(1))
             .body("shoppingCartItemList.product.itemId", hasItems("111111"))
-            .body("shoppingCartItemList.price", hasItems(new Float(100.0)))
-            .body("shoppingCartItemList.quantity", hasItems(new Integer(1)));
+            .body("shoppingCartItemList.price", hasItems(100.0f))
+            .body("shoppingCartItemList.quantity", hasItems(1));
     }
 
     @Test
     @DirtiesContext
     public void addExistingItemToCart() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "345678", "111111", new Integer(1));
-        given().post("/{cartId}/{itemId}/{quantity}", "345678", "111111", new Integer(1))
+        given().post("/{cartId}/{itemId}/{quantity}", "345678", "111111", 1);
+        given().post("/{cartId}/{itemId}/{quantity}", "345678", "111111", 1)
             .then()
             .assertThat()
             .statusCode(200)
             .contentType(ContentType.JSON)
             .body("id", equalTo("345678"))
-            .body("cartItemTotal", equalTo(new Float(200.0)))
+            .body("cartItemTotal", equalTo(200.0f))
             .body("shoppingCartItemList", hasSize(1))
             .body("shoppingCartItemList.product.itemId", hasItems("111111"))
-            .body("shoppingCartItemList.price", hasItems(new Float(100.0)))
-            .body("shoppingCartItemList.quantity", hasItems(new Integer(2)));
+            .body("shoppingCartItemList.price", hasItems(100.0f))
+            .body("shoppingCartItemList.quantity", hasItems(2));
     }
 
     @Test
     @DirtiesContext
     public void addItemToCartWhenCatalogServiceThrowsError() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "234567", "error", new Integer(1))
+        given().post("/{cartId}/{itemId}/{quantity}", "234567", "error", 1)
             .then()
             .assertThat()
             .statusCode(500);
@@ -115,14 +115,14 @@ public class CartEndpointTest {
     @DirtiesContext
     public void removeAllInstancesOfItemFromCart() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "456789", "111111", new Integer(2));
+        given().post("/{cartId}/{itemId}/{quantity}", "456789", "111111", 2);
         given().delete("/{cartId}/{itemId}/{quantity}", "456789", "111111", new Integer(2))
             .then()
             .assertThat()
             .statusCode(200)
             .contentType(ContentType.JSON)
             .body("id", equalTo("456789"))
-            .body("cartItemTotal", equalTo(new Float(0.0)))
+            .body("cartItemTotal", equalTo((float) 0.0))
             .body("shoppingCartItemList", hasSize(0));
     }
 
@@ -130,30 +130,30 @@ public class CartEndpointTest {
     @DirtiesContext
     public void removeSomeInstancesOfItemFromCart() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "567890", "111111", new Integer(3));
-        given().delete("/{cartId}/{itemId}/{quantity}", "567890", "111111", new Integer(1))
+        given().post("/{cartId}/{itemId}/{quantity}", "567890", "111111", 3);
+        given().delete("/{cartId}/{itemId}/{quantity}", "567890", "111111", 1)
             .then()
             .assertThat()
             .statusCode(200)
             .contentType(ContentType.JSON)
             .body("id", equalTo("567890"))
-            .body("cartItemTotal", equalTo(new Float(200.0)))
+            .body("cartItemTotal", equalTo(200.0f))
             .body("shoppingCartItemList", hasSize(1))
-            .body("shoppingCartItemList.quantity", hasItems(new Integer(2)));
+            .body("shoppingCartItemList.quantity", hasItems(2));
     }
 
     @Test
     @DirtiesContext
     public void checkoutCart() throws Exception {
 
-        given().post("/{cartId}/{itemId}/{quantity}", "678901", "111111", new Integer(3));
+        given().post("/{cartId}/{itemId}/{quantity}", "678901", "111111", 3);
         given().post("/checkout/{cartId}", "678901")
             .then()
             .assertThat()
             .statusCode(200)
             .contentType(ContentType.JSON)
             .body("id", equalTo("678901"))
-            .body("cartItemTotal", equalTo(new Float(0.0)))
+            .body("cartItemTotal", equalTo((float) 0.0))
             .body("shoppingCartItemList", hasSize(0));
     }
 
