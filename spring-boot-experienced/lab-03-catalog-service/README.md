@@ -8,7 +8,7 @@ The catalog service is responsible for retrieving products from and adding produ
 
 1. Build the catalog service with Maven from the command line:
 
-    `cd ~/appmod_springboot_experienced/lab-03-catalog-service`
+    `cd ~/spring-boot-experienced/lab-03-catalog-service`
 
     `mvn clean package`
 
